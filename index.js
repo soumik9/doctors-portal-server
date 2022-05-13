@@ -64,9 +64,10 @@ async function run() {
 
         // get bookings by email
         app.get('/booking', async (req, res) => {
-            const patient = req.query.patientEmail;
-            const query ={patient: patient};
+            const patientEmail = req.query.patientEmail;
+            const query = {patientEmail: patientEmail};
             const bookings = await bookingCollection.find(query).toArray();
+            console.log(bookings);
             res.send(bookings);
         })
 
