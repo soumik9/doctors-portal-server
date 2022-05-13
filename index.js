@@ -1,4 +1,4 @@
-//require files
+//require files   // git push heroku main
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // connect to mongo
-const uri = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@doctors-portal.mmfug.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@doctors-portal.mmfug.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run(){
@@ -27,11 +27,7 @@ async function run(){
         app.get('/' , (req, res) => {
             res.send('Doctors Portal Server Is Ready')
         })
-        // api homepagegg
-        app.get('/check' , (req, res) => {
-            res.send('Doctors Portal Server Is Ready')
-        })
-
+      
         // get services
         app.get('/services' , async (req, res) => {
             const query = {};
