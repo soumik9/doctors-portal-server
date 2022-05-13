@@ -22,18 +22,27 @@ async function run(){
         //connect to mongodb collection
         await client.connect();
         const serviceCollection = client.db("doctors_portal").collection("services");
-        
+        const bookingCollection = client.db("doctors_portal").collection("bookings");
+         
         // api homepage
         app.get('/' , (req, res) => {
             res.send('Doctors Portal Server Is Ready')
         })
       
         // get services
-        app.get('/services' , async (req, res) => {
+        app.post('/services' , async (req, res) => {
             const query = {};
-            const curson = serviceCollection.find(query);
-            const services = await curson.toArray();
+            const cursor = serviceCollection.find(query);
+            const services = await cursor.toArray();
             res.send(services);
+          })
+
+
+        // post booking
+        app.get('/booking' , async (req, res) => {
+            const booking = req.body;
+            const result = bookingCollection.insertOne(booking);
+            res.send(result);
           })
      
     }finally{
