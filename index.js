@@ -28,9 +28,13 @@ async function run(){
             res.send('Doctors Portal Server Is Ready')
         })
 
-        // api homepage
-      
-
+        // get services
+        app.get('/services' , async (req, res) => {
+            const query = {};
+            const curson = serviceCollection.find(query);
+            const services = await curson.toArray();
+            res.send(services);
+          })
      
     }finally{
 
