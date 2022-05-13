@@ -16,31 +16,31 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@doctors-portal.mmfug.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-async function run(){
-    try{
+async function run() {
+    try {
 
         //connect to mongodb collection
         await client.connect();
         const serviceCollection = client.db("doctors_portal").collection("services");
         const bookingCollection = client.db("doctors_portal").collection("bookings");
-         
+
         // api homepage
-        app.get('/' , (req, res) => {
+        app.get('/', (req, res) => {
             res.send('Doctors Portal Server Is Ready')
         })
-      
+
         // get services
-        app.get('/services' , async (req, res) => {
+        app.get('/services', async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query);
             const services = await cursor.toArray();
             res.send(services);
-          })
+        })
 
         // get available slots
-        app.get('/available' , async (req, res) => {
+        app.get('/available', async (req, res) => {
             const date = req.query.date;
-            const query = {date: date};
+            const query = { date: date };
 
             // get all service
             const services = await serviceCollection.find().toArray();
@@ -55,30 +55,37 @@ async function run(){
                 const bookedSlots = serviceBookings.map(s => s.slot);
 
                 //getting available slots array
-                const available = service.slots.filter(s => !bookedSlots .includes(s));
+                const available = service.slots.filter(s => !bookedSlots.includes(s));
                 service.slots = available;
             })
 
             res.send(services);
-          })
+        })
 
+        // get bookings by email
+        app.get('/booking', async (req, res) => {
+            const patient = req.query.patientEmail;
+            const query ={patient: patient};
+            const bookings = await bookingCollection.find(query).toArray();
+            res.send(bookings);
+        })
 
         // post booking
-        app.post('/booking' , async (req, res) => {
+        app.post('/booking', async (req, res) => {
             const booking = req.body;
-            const query = {treatment: booking.treatment, date: booking.date, patientEmail: booking.patientEmail}
+            const query = { treatment: booking.treatment, date: booking.date, patientEmail: booking.patientEmail }
 
             const exists = await bookingCollection.findOne(query);
 
-            if(exists){
-                return res.send({success: false, booking: exists})
-            }else{
+            if (exists) {
+                return res.send({ success: false, booking: exists })
+            } else {
                 const result = await bookingCollection.insertOne(booking);
-                return res.send({success: true, result});
+                return res.send({ success: true, result });
             }
-          })
-     
-    }finally{
+        })
+
+    } finally {
 
     }
 }
