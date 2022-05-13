@@ -74,7 +74,7 @@ async function run(){
                 return res.send({success: false, booking: exists})
             }else{
                 const result = await bookingCollection.insertOne(booking);
-                return res.send({success: false, result});
+                return res.send({success: true, result});
             }
           })
      
