@@ -27,7 +27,7 @@ async function run(){
         app.get('/' , (req, res) => {
             res.send('Doctors Portal Server Is Ready')
         })
-        // api homepage
+        // api homepagegg
         app.get('/check' , (req, res) => {
             res.send('Doctors Portal Server Is Ready')
         })
