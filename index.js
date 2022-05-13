@@ -27,6 +27,10 @@ async function run(){
         app.get('/' , (req, res) => {
             res.send('Doctors Portal Server Is Ready')
         })
+        // api homepage
+        app.get('/check' , (req, res) => {
+            res.send('Doctors Portal Server Is Ready')
+        })
 
         // get services
         app.get('/services' , async (req, res) => {
