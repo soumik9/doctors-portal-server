@@ -30,7 +30,7 @@ async function run(){
         })
       
         // get services
-        app.post('/services' , async (req, res) => {
+        app.get('/services' , async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query);
             const services = await cursor.toArray();
@@ -39,7 +39,7 @@ async function run(){
 
 
         // post booking
-        app.get('/booking' , async (req, res) => {
+        app.post('/booking' , async (req, res) => {
             const booking = req.body;
             const result = bookingCollection.insertOne(booking);
             res.send(result);
