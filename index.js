@@ -17,18 +17,18 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@doc
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // jwt verification
-function verifyJWT(req, res, next){
+function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
-   
-    if(!authHeader){
-        return res.status(401).send({message: 'Unauthorized access'});
+
+    if (!authHeader) {
+        return res.status(401).send({ message: 'Unauthorized access' });
     }
 
     const token = authHeader.split(' ')[1];
 
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
-        if(err){
-            return res.status(403).send({message: 'Forbidden access'});
+        if (err) {
+            return res.status(403).send({ message: 'Forbidden access' });
         }
         req.decoded = decoded;
         next();
@@ -49,22 +49,28 @@ async function run() {
             res.send('Doctors Portal Server Is Ready')
         })
 
+        // get all users
+        app.get('/users', async (req, res) => {
+            const users = await userCollection.find().toArray();
+            res.send(users);
+        })
+
         // users
         app.put('/users/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body
-            const filter = {email: email};
+            const filter = { email: email };
             const options = { upsert: true };
-            
+
             const updateDoc = {
                 $set: user,
             }
 
-            const result =  await userCollection.updateOne(filter, updateDoc, options);
+            const result = await userCollection.updateOne(filter, updateDoc, options);
             console.log(result);
-            const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN, {expiresIn: '1d'});
+            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
             console.log('token', token);
-            res.send({ result, token});
+            res.send({ result, token });
         })
 
         // get services
@@ -105,15 +111,12 @@ async function run() {
             const patientEmail = req.query.patientEmail;
             const decodedEmail = req.decoded.email;
 
-            console.log(decodedEmail);
-
-            if(patientEmail === decodedEmail){
-                const query = {patientEmail: patientEmail};
-
+            if (patientEmail === decodedEmail) {
+                const query = { patientEmail: patientEmail };
                 const bookings = await bookingCollection.find(query).toArray();
                 return res.send(bookings);
-            }else{
-                return res.status(403).send({message: 'forbidden access'});
+            } else {
+                return res.status(403).send({ message: 'forbidden access' });
             }
         })
 
