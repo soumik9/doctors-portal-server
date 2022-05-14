@@ -23,10 +23,26 @@ async function run() {
         await client.connect();
         const serviceCollection = client.db("doctors_portal").collection("services");
         const bookingCollection = client.db("doctors_portal").collection("bookings");
+        const userCollection = client.db("doctors_portal").collection("users");
 
         // api homepage
         app.get('/', (req, res) => {
             res.send('Doctors Portal Server Is Ready')
+        })
+
+        // users
+        app.put('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body
+            const filter = {email: email};
+            const options = { upsert: true };
+            
+            const updateDoc = {
+                $set: user,
+            }
+
+            const result =  await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
         })
 
         // get services
