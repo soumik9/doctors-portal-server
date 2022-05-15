@@ -55,18 +55,31 @@ async function run() {
             res.send(users);
         });
 
-        // users set toles
-        app.put('/user/admin/:email', async (req, res) => {
+        // get user role by email
+        app.get('/admin/:email', (req, res) => {
             const email = req.params.email;
-            const filter = { email: email };
+            const user = await userCollection.findOne({email: email});
+            const isAdmin = user.role === 'admin';
+            res.send({admin: isAdmin});
+        })
 
+        // users set roles
+        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const requester = req.decoded.email;
+            const requesterAcc = await userCollection.findOne({ email: requester });
 
-            const updateDoc = {
-                $set: {role: 'admin'},
+            if (requesterAcc.role === 'admin') {
+                const filter = { email: email };
+                const updateDoc = {
+                    $set: { role: 'admin' },
+                }
+                const result = await userCollection.updateOne(filter, updateDoc);
+                return res.send(result);
+            } else {
+                return res.status(403).send({ message: 'forbidden' });
             }
 
-            const result = await userCollection.updateOne(filter, updateDoc);
-            res.send(result);
         })
 
         // users
