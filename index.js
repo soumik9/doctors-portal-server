@@ -174,6 +174,12 @@ async function run() {
             return res.send(result);
         })
 
+        // get doctor
+        app.get('/doctor', verifyJWT, verifyAdmin, async (req, res) => {
+            const doctors = await doctorCollection.find().toArray();
+            res.send(doctors);
+        })
+
     } finally {
 
     }
