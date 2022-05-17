@@ -78,7 +78,7 @@ async function run() {
                 return res.send(result);
             } else {
                 return res.status(403).send({ message: 'forbidden' });
-            }
+            } 
 
         })
 
@@ -101,7 +101,7 @@ async function run() {
         // get services
         app.get('/services', async (req, res) => {
             const query = {};
-            const cursor = serviceCollection.find(query);
+            const cursor = serviceCollection.find(query).project({name: 1});
             const services = await cursor.toArray();
             res.send(services);
         })
