@@ -4,6 +4,8 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+// const nodemailer = require('nodemailer');
+// const sgTransport = require('nodemailer-sendgrid-transport');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -34,6 +36,39 @@ function verifyJWT(req, res, next) {
         next();
     })
 }
+
+// const options = {
+//     auth: {
+//         api_key: process.env.EMAIL_SENDER_KEY
+//     }
+// }
+
+// const emailClient = nodemailer.createTransport(sgTransport(options));
+
+// email on booking
+/* function sendAppointmentEmail(booking){
+        const {treatment, patient, patientEmail, date, slot} = booking;
+
+        const email = {
+            from: process.env.EMAIL_SENDER,
+            to: patientEmail,
+            subject: `Your Appoint for ${treatement}`,
+            text: `Your Appoint for ${treatement}`,
+            html: `<div>
+                <h1>Hello ${patient}</h1>
+                <h3>Your Appoint for ${treatement}</h3>
+                <p>the date ${date} on the ${slot} time</p>
+            </div>`,
+        };
+
+        emailClient.sendMail(email, function(err, info){
+            if(err){
+                console.log(err)
+            }else{
+                 console.log('sent')
+            }
+        })
+} */
 
 async function run() {
     try {
@@ -138,6 +173,14 @@ async function run() {
             res.send(services);
         })
 
+        // get bookings by id
+        app.get('/booking/:appointmentId', verifyJWT, async (req, res) => {
+            const appointmentId = req.params.appointmentId;
+            const query = { _id: ObjectId(appointmentId) };
+            const booking = await bookingCollection.findOne(query);
+            return res.send(booking);
+
+        })
         // get bookings by email
         app.get('/booking', verifyJWT, async (req, res) => {
             const patientEmail = req.query.patientEmail;
@@ -163,6 +206,7 @@ async function run() {
                 return res.send({ success: false, booking: exists })
             } else {
                 const result = await bookingCollection.insertOne(booking);
+                // sendAppointmentEmail(booking);
                 return res.send({ success: true, result });
             }
         })
