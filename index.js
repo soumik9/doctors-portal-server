@@ -174,7 +174,7 @@ async function run() {
         })
 
         // get bookings by id
-        app.get('/booking/:appointmentId', verifyJWT, async (req, res) => {
+        app.get('/booking/:appointmentId', async (req, res) => {
             const appointmentId = req.params.appointmentId;
             const query = { _id: ObjectId(appointmentId) };
             const booking = await bookingCollection.findOne(query);
@@ -182,7 +182,7 @@ async function run() {
 
         })
         // get bookings by email
-        app.get('/booking', verifyJWT, async (req, res) => {
+        app.get('/bookings', verifyJWT, async (req, res) => {
             const patientEmail = req.query.patientEmail;
             const decodedEmail = req.decoded.email;
 
