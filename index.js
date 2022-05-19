@@ -244,7 +244,7 @@ async function run() {
                 currency: 'usd', 
                 payment_method_types: ['card'] 
             });
-            res.send({ clientSceret:paymentIntent.client_Secret });
+            res.send({ clientSecret: paymentIntent.client_secret });
         })
 
     } finally {
